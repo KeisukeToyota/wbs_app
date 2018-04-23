@@ -1,5 +1,9 @@
 <template>
   <div class="container">
+    <div class="dhx_cal_navline">
+  		<div class="dhx_cal_prev_button">&nbsp;</div>
+  		<div class="dhx_cal_next_button">&nbsp;</div>
+	  </div>
     <div class="right-container">
       <div class="gantt-selected-info">
         <div v-if="selectedTask">
@@ -31,8 +35,8 @@
             return {
                 tasks: {
                     data: [
-                        {id: 1, text: '日報', start_date: '21-04-2018 12:00', duration: 30, progress: 0.6},
-                        {id: 2, text: '週報', start_date: '21-04-2018 13:00', duration: 30, progress: 0.4}
+                        {id: 1, text: '日報', start_date: '21-04-2018 12:00', duration: 120, progress: 0.0, color: "#0CD329"},
+                        // {id: 2, text: '週報', start_date: '21-04-2018 13:00', duration: 120, progress: 0.0}
                     ],
                     links: [
                         {id: 1, source: 1, target: 2, type: '0'}
@@ -48,7 +52,7 @@
                 return Math.round((+val) * 100)
             },
             niceDate (obj){
-                return `${obj.getFullYear()}年${obj.getMonth()}月${obj.getDate()}日 ${obj.getHours()}時${obj.getMinutes()}Z分`
+                return `${obj.getFullYear()}年${obj.getMonth()}月${obj.getDate()}日 ${obj.getHours()}時${obj.getMinutes()}分`
             }
         },
         methods: {
@@ -85,12 +89,14 @@
     height: 100%;
     margin: 0;
     padding: 0;
+    /* background-color: #A9A9A9 */
   }
 
   .container {
     height: 100%;
     width: 100%;
   }
+
 
   .left-container {
     overflow: hidden;

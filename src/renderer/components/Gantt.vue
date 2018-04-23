@@ -20,12 +20,11 @@
             $_initGanttEvents: function () {
                 gantt.config.scale_unit = "hour";
                 gantt.config.multiselect = true;
-                // gantt.config.step = 1;
                 gantt.config.duration_step = 0;
-                gantt.config.time_step = 15;
                 gantt.config.date_scale = "%H:00";
                 gantt.config.duration_unit = "minute";
                 gantt.config.columns = [
+                    {name:"wbs", label:"WBS", width:40, template:gantt.getWBSCode },
                     {name:"text",       label:"タスク名",  width:"*", tree:true },
                     {name:"start_date", label:"開始時間", align:"center" },
                     {name:"duration",   label:"工数",   align:"center" },
@@ -36,9 +35,10 @@
                 gantt.config.fit_tasks = true;
                 gantt.config.scale_height = 70;
                 gantt.config.lightbox.sections=[
-                    {name:"description", height:70, map_to:"text", type:"textarea", focus:true},
-                    {name:"time",        height:72, map_to:"auto", type:"time"}
+                    {name:"description", height:38, map_to:"text", type:"textarea", focus:true},
+                    {name: "time", height: 72, type: "duration", map_to: "auto"}
                 ];
+                gantt.config.time_step = 15;
                 if(gantt.$_eventsInitialized)
                     return;
                 gantt.attachEvent('onTaskSelected', (id) => {
@@ -49,12 +49,28 @@
                 gantt.attachEvent('onAfterTaskAdd', (id, task) => {
                     this.$emit('task-updated', id, 'inserted', task)
                     task.progress = task.progress || 0
+                    if (task.parent == 0) {
+                      task.color = "#0CD329"
+                    }
                     if(gantt.getSelectedId() == id) {
                         this.$emit('task-selected', task)
                     }
                 })
 
                 gantt.attachEvent('onAfterTaskUpdate', (id, task) => {
+                     if (task.parent == 0) {
+                       return;
+                    }
+                    var parentTask = gantt.getTask(task.parent);
+                    var children = gantt.getChildren(parentTask.id);
+                    var totProgress = 0;
+                    var tempTask;
+                    children.forEach(function (child) {
+                      tempTask = gantt.getTask(child);
+                      totProgress += parseFloat(tempTask.progress);
+                    });
+                    parentTask.progress = (totProgress / children.length).toFixed(2);
+                    gantt.updateTask(parentTask.id);
                     this.$emit('task-updated', id, 'updated', task)
                 })
 
